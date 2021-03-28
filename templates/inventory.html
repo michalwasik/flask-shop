@@ -3,13 +3,27 @@
 </head>
 <body>
 <h1>New delivery data:</h1>
-<br><br>
+<br>
+
+
 <form target="_self" method="post">
+
+
+
   <label for="product">Product:</label><br>
   <input type="text" id="product" name="product"><br>
   <label for="quantity">Quantity:</label><br>
   <input type="number" id="quantity" name="quantity" min="1"><br>
+  <label for="price">Price**:</label><br>
+  <input type="number" id="price" name="price"><br>
+    <h4>    *Optional*</h4>
+
+  <input type="radio" name="choice-radio">
+    Product doesn't exist in database
+  <br><br>
   <input type="submit" value="Add to inventory">
+  <br><br>
+  **Fill when add new product
 </form>
 </body>
 </html>

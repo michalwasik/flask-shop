@@ -16,13 +16,19 @@ class Customer(Base):
     orders = relationship('Order', backref='customer')
 
 
+association_table = Table('association', Base.metadata,
+    Column('order_id', Integer, ForeignKey('order.id')),
+    Column('product_id', Integer, ForeignKey('product.id'))
+)
+
+
 class Order(Base):
     __tablename__ = 'order'
     id = Column(Integer, primary_key=True)
     order_date = Column(DateTime, nullable=False, default=datetime.utcnow())
     coupon = Column(String)
     customer_id = Column(Integer, ForeignKey('customer.id'), nullable=False)
-    products = relationship('Product', secondary='Association')
+    products = relationship('Product', secondary=association_table)
 
 
 class Product(Base):
@@ -33,9 +39,4 @@ class Product(Base):
     amount = Column(Integer)
 
 
-class Association(Base):
-    __tablename__ = 'association'
-    order_id = Column(Integer, ForeignKey('order.id'), primary_key=True)
-    product_id = Column(Integer, ForeignKey('product.id'), primary_key=True)
-
-# Base.metadata.create_all(engine)  create db
+Base.metadata.create_all(engine)  # create db
