@@ -2,7 +2,9 @@ from flask import render_template, request, Flask
 from model import *
 from sqlalchemy.orm import sessionmaker
 from schema import Schema, And, Or, Optional, Use
-from datetime import datetime
+import hashlib
+# from datetime import datetime
+
 
 Session = sessionmaker(bind=engine)
 session = Session()
@@ -17,19 +19,16 @@ def index():
 @app.route('/admin/delivery', methods=['GET', 'POST'])
 def delivery():
     if request.method == 'POST':
-        new_item = False
         data = request.form.to_dict()
-        if 'choice-radio' in data:
-            new_item = True
-            data.pop('choice-radio')
+        if data['price'] == '':
+            data['price'] = 0
         product_schema = Schema({'product': str, 'quantity': And(Use(int), lambda n: n > 0),
-                                 Optional('price'): Use(float)})
+                                 Optional('price'): Use(float)}, ignore_extra_keys=True)
         valid_data = product_schema.validate(data)
-        print(valid_data)
-        if new_item:
+        if 'choice-radio' in data:
             add_new_product(valid_data)
         else:
-            pass
+            update_product_quantity(valid_data)
     return render_template('inventory.html')
 
 
@@ -40,7 +39,60 @@ def add_new_product(data):
 
 
 def update_product_quantity(data):
-    pass
+    old_product = session.query(Product).filter_by(name=data['product']).first()
+    old_product.amount += data['quantity']
+    session.commit()
+
+
+@app.route('/create_account', methods=['GET', 'POST'])
+def new_customer():
+    if request.method == 'POST':
+        data = request.form.to_dict()
+        customer_schema = Schema({'fname': str, 'lname': str, 'email': str, 'login': str,
+                                  'password': And(str, lambda s: len(s) > 6)}, ignore_extra_keys=True)
+        valid_customer = customer_schema.validate(data)
+        add_new_customer(valid_customer)
+    return render_template('create_account.html')
+
+
+# os.urandom(16)
+my_salt = b'\xef\xd8\xb1-\xaa\xe8]\xf8H\x9eErS\xb5~\x13'
+
+
+def get_hashed_pw(password, salt=my_salt):
+    salted_pw = password.encode('utf-8') + salt
+    return hashlib.sha256(salted_pw).hexdigest()
+
+
+def add_new_customer(data):
+    customer = Customer(first_name=data['fname'], last_name=data['lname'], email=data['email'])
+    password = get_hashed_pw(data['password'])
+    login_data = Account_data(login=data['login'], hashed_password=password, customer_email=customer.email)
+    session.add(customer)
+    session.add(login_data)
+    session.commit()
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        data = request.form.to_dict()
+        login_schema = Schema({'login': str, 'password': str})
+        valid_login = login_schema.validate(data)
+        client = session.query(Account_data).filter_by(login=valid_login['login']).first()
+        if client:
+            pw_match = password_check(valid_login['password'], client.hashed_password)
+            if pw_match:
+                return 'Successfully logged in!'
+            else:
+                return 'Wrong password'
+        else:
+            return 'Wrong login'
+    return render_template('login.html')
+
+
+def password_check(password, og_password):
+    return get_hashed_pw(password) == og_password
 
 
 if __name__ == '__main__':

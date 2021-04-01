@@ -7,6 +7,14 @@ engine = create_engine('sqlite:///shop.db', connect_args={'check_same_thread': F
 Base = declarative_base()
 
 
+class Account_data(Base):
+    __tablename__= 'account_data'
+    id = Column(Integer, primary_key=True)
+    login = Column(String, nullable=False, unique=True)
+    hashed_password = Column(Integer, nullable=False, unique=True)
+    customer_email = Column(String, ForeignKey('customer.email'))
+
+
 class Customer(Base):
     __tablename__ = 'customer'
     id = Column(Integer, primary_key=True)
@@ -14,6 +22,7 @@ class Customer(Base):
     last_name = Column(String, nullable=False)
     email = Column(String, nullable=False, unique=True)
     orders = relationship('Order', backref='customer')
+    acc_data  = relationship('Account_data', backref='customer')
 
 
 association_table = Table('association', Base.metadata,
