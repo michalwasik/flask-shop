@@ -1,14 +1,18 @@
 from flask import render_template, request, Flask
 from model import *
 from sqlalchemy.orm import sessionmaker
-from schema import Schema, And, Or, Optional, Use
 import hashlib
+from flask_login import LoginManager, UserMixin
+from my_schema import product_schema, customer_schema, login_schema
 # from datetime import datetime
 
 
 Session = sessionmaker(bind=engine)
 session = Session()
-app=Flask(__name__)
+app = Flask(__name__)
+app.secret_key = b'\xd9,\x9e\x14\xe1\xfd\xf4_{\xd2\x16,X@\xd5\n'
+login_manager = LoginManager()
+login_manager.init_app(app)
 
 
 @app.route('/')
@@ -20,10 +24,7 @@ def index():
 def delivery():
     if request.method == 'POST':
         data = request.form.to_dict()
-        if data['price'] == '':
-            data['price'] = 0
-        product_schema = Schema({'product': str, 'quantity': And(Use(int), lambda n: n > 0),
-                                 Optional('price'): Use(float)}, ignore_extra_keys=True)
+        data.setdefault('price', 0)
         valid_data = product_schema.validate(data)
         if 'choice-radio' in data:
             add_new_product(valid_data)
@@ -48,8 +49,6 @@ def update_product_quantity(data):
 def new_customer():
     if request.method == 'POST':
         data = request.form.to_dict()
-        customer_schema = Schema({'fname': str, 'lname': str, 'email': str, 'login': str,
-                                  'password': And(str, lambda s: len(s) > 6)}, ignore_extra_keys=True)
         valid_customer = customer_schema.validate(data)
         add_new_customer(valid_customer)
     return render_template('create_account.html')
@@ -77,7 +76,6 @@ def add_new_customer(data):
 def login():
     if request.method == 'POST':
         data = request.form.to_dict()
-        login_schema = Schema({'login': str, 'password': str})
         valid_login = login_schema.validate(data)
         client = session.query(Account_data).filter_by(login=valid_login['login']).first()
         if client:
