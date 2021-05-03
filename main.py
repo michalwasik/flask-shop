@@ -1,23 +1,15 @@
-from flask import render_template, request, Flask
+from flask import render_template, request, Flask, make_response, session, redirect, url_for
 from model import *
 from sqlalchemy.orm import sessionmaker
 import hashlib
-from flask_login import LoginManager, UserMixin
 from my_schema import product_schema, customer_schema, login_schema
+
 # from datetime import datetime
 
 
 Session = sessionmaker(bind=engine)
 session = Session()
 app = Flask(__name__)
-app.secret_key = b'\xd9,\x9e\x14\xe1\xfd\xf4_{\xd2\x16,X@\xd5\n'
-login_manager = LoginManager()
-login_manager.init_app(app)
-
-
-@app.route('/')
-def index():
-    return 'Hello world'
 
 
 @app.route('/admin/delivery', methods=['GET', 'POST'])
@@ -81,16 +73,25 @@ def login():
         if client:
             pw_match = password_check(valid_login['password'], client.hashed_password)
             if pw_match:
-                return 'Successfully logged in!'
+                res = make_response('Successfully logged in!')
+                res.set_cookie('username', bytes(client.id))
+                print(type(client.id), client.login)
             else:
-                return 'Wrong password'
+                res = make_response('Wrong password')
         else:
-            return 'Wrong login'
+            res = make_response('Wrong login')
+        return res
+
     return render_template('login.html')
 
 
 def password_check(password, og_password):
     return get_hashed_pw(password) == og_password
+
+@app.route('/')
+def items():
+    all_items = session.query(Product).all()
+    return render_template('index.html', data=all_items)
 
 
 if __name__ == '__main__':
