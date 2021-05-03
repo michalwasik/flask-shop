@@ -12,6 +12,8 @@ class Account_data(Base):
     id = Column(Integer, primary_key=True)
     login = Column(String, nullable=False, unique=True)
     hashed_password = Column(Integer, nullable=False, unique=True)
+    login_cookie = Column(String, nullable=True, unique=True)
+    cookie_expired = Column(DateTime, nullable=True)
     customer_email = Column(String, ForeignKey('customer.email'))
 
 

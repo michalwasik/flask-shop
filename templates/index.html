@@ -2,10 +2,13 @@
 <head>
 </head>
 <body>
-    <ul>
-        {% for obj in data %}
-        <li>{{obj.name}}         price:  {{obj.price}}          Quantity:    {{obj.amount}}</li>
-        {% endfor %}
-    </ul>
+<form target="_self" method="post">
+{% for obj in data %}
+
+    <label>{{obj.name}} price: {{obj.price}}  Quantity: {{obj.amount}}</label>
+    <input type="number" id={{obj.name}} name={{obj.name}}><br>
+{% endfor %}
+    <input type="submit" value="Buy">
+</form>
 </body>
 </html>

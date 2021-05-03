@@ -3,7 +3,7 @@ from model import *
 from sqlalchemy.orm import sessionmaker
 import hashlib
 from my_schema import product_schema, customer_schema, login_schema
-
+from secrets import token_hex
 # from datetime import datetime
 
 
@@ -73,9 +73,11 @@ def login():
         if client:
             pw_match = password_check(valid_login['password'], client.hashed_password)
             if pw_match:
+                cookie_token = token_hex(16)
+                client.login_cookie = cookie_token
+                session.commit()
                 res = make_response('Successfully logged in!')
-                res.set_cookie('username', bytes(client.id))
-                print(type(client.id), client.login)
+                res.set_cookie('cookie_token', cookie_token)
             else:
                 res = make_response('Wrong password')
         else:
@@ -88,8 +90,15 @@ def login():
 def password_check(password, og_password):
     return get_hashed_pw(password) == og_password
 
-@app.route('/')
+
+@app.route('/', methods=['GET', 'POST'])
 def items():
+    if request.method == 'POST':
+        cookie_token = request.cookies.get('cookie_token')
+        client = session.query(Account_data).filter_by(login_cookie=cookie_token).first()
+        if not client:
+            return redirect(url_for('login'))
+        data = request.form.to_dict()
     all_items = session.query(Product).all()
     return render_template('index.html', data=all_items)
 
