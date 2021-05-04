@@ -19,31 +19,41 @@ class Account_data(Base):
 
 class Customer(Base):
     __tablename__ = 'customer'
+
     id = Column(Integer, primary_key=True)
     first_name = Column(String, nullable=False)
     last_name = Column(String, nullable=False)
     email = Column(String, nullable=False, unique=True)
+
     orders = relationship('Order', backref='customer')
     acc_data  = relationship('Account_data', backref='customer')
 
 
-association_table = Table('association', Base.metadata,
-    Column('order_id', Integer, ForeignKey('order.id')),
-    Column('product_id', Integer, ForeignKey('product.id'))
-)
+class Association(Base):
+    __tablename__ = 'association'
+
+    order_id = Column(Integer, ForeignKey('order.id'), primary_key=True)
+    product_id = Column(Integer, ForeignKey('product.id'), primary_key=True)
+    quantity = Column(Integer)
+
+    order = relationship("Order", backref="order_associations")
+    product = relationship("Product", backref="product_associations")
 
 
 class Order(Base):
     __tablename__ = 'order'
+
     id = Column(Integer, primary_key=True)
     order_date = Column(DateTime, nullable=False, default=datetime.utcnow())
-    coupon = Column(String)
+    coupon = Column(String, nullable=True)
     customer_id = Column(Integer, ForeignKey('customer.id'), nullable=False)
-    products = relationship('Product', secondary=association_table)
+
+    products = relationship('Product', secondary="association")
 
 
 class Product(Base):
     __tablename__ = 'product'
+
     id = Column(Integer, primary_key=True)
     name = Column(String, nullable=False, unique=True)
     price = Column(Integer, nullable=False)

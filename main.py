@@ -99,8 +99,22 @@ def items():
         if not client:
             return redirect(url_for('login'))
         data = request.form.to_dict()
+        purchase(data, client.customer_email)
     all_items = session.query(Product).all()
     return render_template('index.html', data=all_items)
+
+
+def purchase(items, email):
+    user_id = session.query(Customer).filter_by(email=email).first().id
+    products = [session.query(Product).filter_by(name=name).first() for name in items]
+    order = Order(customer_id=user_id, products=products)
+    session.add(order)
+    session.commit()
+    for name in items:
+        product_id = session.query(Product).filter_by(name=name).first().id
+        new_order = session.query(Association).filter_by(product_id=product_id, order_id=order.id).first()
+        new_order.quantity = items[name]
+        session.commit()
 
 
 if __name__ == '__main__':
