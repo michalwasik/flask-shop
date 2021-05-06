@@ -9,7 +9,7 @@
                 <div class="alert alert-danger alert-dismisable" role="alert">
                     <li>{{ message }}</li>
                 </div>
-            {% endfor%}
+            {% endfor %}
     {% endif %}
     {% endwith %}
     <br><br>
@@ -19,6 +19,11 @@
     <input type="number" id={{obj.name}} name={{obj.name}}><br>
 {% endfor %}
     <input type="submit" value="Buy">
+     <nav>
+          <ul class="nav nav-pills pull-right">
+            <li role="presentation" class="active"><a href="/logout">Logout</a></li>
+          </ul>
+     </nav>
 </form>
 </body>
 </html>

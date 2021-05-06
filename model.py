@@ -29,15 +29,17 @@ class Customer(Base):
     acc_data  = relationship('Account_data', backref='customer')
 
 
-class Association(Base):
-    __tablename__ = 'association'
+class Orderproduct(Base):
+    __tablename__ = 'orderproduct'
 
     order_id = Column(Integer, ForeignKey('order.id'), primary_key=True)
     product_id = Column(Integer, ForeignKey('product.id'), primary_key=True)
-    quantity = Column(Integer)
+    name = Column(String)
+    price = Column(Integer)
+    amount = Column(Integer)
 
-    order = relationship("Order", backref="order_associations")
-    product = relationship("Product", backref="product_associations")
+    order = relationship("Order", backref="order_product")
+    product = relationship("Product", backref="product_order")
 
 
 class Order(Base):
@@ -48,7 +50,7 @@ class Order(Base):
     coupon = Column(String, nullable=True)
     customer_id = Column(Integer, ForeignKey('customer.id'), nullable=False)
 
-    products = relationship('Product', secondary="association")
+    products = relationship('Product', secondary="orderproduct")
 
 
 class Product(Base):

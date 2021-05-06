@@ -18,8 +18,10 @@ app.secret_key = '75e958ab19d6a176852e31c0a7a2dd18'
 def delivery():
     if request.method == 'POST':
         data = request.form.to_dict()
+        print(data)
         data.setdefault('price', 0)
         valid_data = product_schema.validate(data)
+        print(valid_data)
         if 'choice-radio' in data:
             add_new_product(valid_data)
         else:
@@ -45,6 +47,7 @@ def new_customer():
         data = request.form.to_dict()
         valid_customer = customer_schema.validate(data)
         add_new_customer(valid_customer)
+        return redirect(url_for('login'))
     return render_template('create_account.html')
 
 
@@ -66,6 +69,14 @@ def add_new_customer(data):
     session.commit()
 
 
+def index_page(cookie=None):
+    all_items = session.query(Product).all()
+    res = make_response(render_template('index.html', data=all_items))
+    if cookie:
+        res.set_cookie('cookie_token', cookie)
+    return res
+
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -78,15 +89,22 @@ def login():
                 cookie_token = token_hex(16)
                 client.login_cookie = cookie_token
                 session.commit()
-                res = make_response('Successfully logged in!')
+                flash('Successfully logged in')
+                res = make_response(redirect('/'))
                 res.set_cookie('cookie_token', cookie_token)
             else:
                 res = make_response('Wrong password')
         else:
             res = make_response('Wrong login')
         return res
-
     return render_template('login.html')
+
+
+@app.route('/logout')
+def logout():
+    res = make_response(redirect(url_for('login')))
+    res.set_cookie('cookie_token', '', expires=0)
+    return res
 
 
 def password_check(password, og_password):
@@ -103,8 +121,7 @@ def items():
         data = request.form.to_dict()
         data = {k: v for k, v in data.items() if v}
         purchase(data, client.customer_email)
-    all_items = session.query(Product).all()
-    return render_template('index.html', data=all_items)
+    return index_page()
 
 
 def purchase(items, email):
@@ -115,18 +132,20 @@ def purchase(items, email):
     session.commit()
     for name in items:
         product = session.query(Product).filter_by(name=name).first()
-        new_order = session.query(Association).filter_by(product_id=product.id, order_id=order.id).first()
+        new_order = session.query(Orderproduct).filter_by(product_id=product.id, order_id=order.id).first()
         if product.amount < int(items[name]):
             flash(f'Max amount of {name} is {items[name]}')
-            all_items = session.query(Product).all()
-            return render_template('index.html', data=all_items)
+            return index_page()
         product.amount -= int(items[name])
-        new_order.quantity = items[name]
+        new_order.amount = items[name]
+        new_order.name = product.name
+        new_order.price = product.price
         session.commit()
 
 # to do:
 #     - cookie expire date
 #     - cookie token unique
+
 
 if __name__ == '__main__':
     app.run(debug=True)
