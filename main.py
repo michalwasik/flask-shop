@@ -1,4 +1,4 @@
-from flask import render_template, request, Flask, make_response, session, redirect, url_for
+from flask import render_template, request, Flask, make_response, session, redirect, url_for, flash
 from model import *
 from sqlalchemy.orm import sessionmaker
 import hashlib
@@ -10,6 +10,8 @@ from secrets import token_hex
 Session = sessionmaker(bind=engine)
 session = Session()
 app = Flask(__name__)
+# secret_key generated using token_hex(16)
+app.secret_key = '75e958ab19d6a176852e31c0a7a2dd18'
 
 
 @app.route('/admin/delivery', methods=['GET', 'POST'])
@@ -99,6 +101,7 @@ def items():
         if not client:
             return redirect(url_for('login'))
         data = request.form.to_dict()
+        data = {k: v for k, v in data.items() if v}
         purchase(data, client.customer_email)
     all_items = session.query(Product).all()
     return render_template('index.html', data=all_items)
@@ -106,16 +109,24 @@ def items():
 
 def purchase(items, email):
     user_id = session.query(Customer).filter_by(email=email).first().id
-    products = [session.query(Product).filter_by(name=name).first() for name in items]
+    products = session.query(Product).filter(Product.name.in_(items)).all()
     order = Order(customer_id=user_id, products=products)
     session.add(order)
     session.commit()
     for name in items:
-        product_id = session.query(Product).filter_by(name=name).first().id
-        new_order = session.query(Association).filter_by(product_id=product_id, order_id=order.id).first()
+        product = session.query(Product).filter_by(name=name).first()
+        new_order = session.query(Association).filter_by(product_id=product.id, order_id=order.id).first()
+        if product.amount < int(items[name]):
+            flash(f'Max amount of {name} is {items[name]}')
+            all_items = session.query(Product).all()
+            return render_template('index.html', data=all_items)
+        product.amount -= int(items[name])
         new_order.quantity = items[name]
         session.commit()
 
+# to do:
+#     - cookie expire date
+#     - cookie token unique
 
 if __name__ == '__main__':
     app.run(debug=True)
