@@ -18,10 +18,8 @@ app.secret_key = '75e958ab19d6a176852e31c0a7a2dd18'
 def delivery():
     if request.method == 'POST':
         data = request.form.to_dict()
-        print(data)
         data.setdefault('price', 0)
         valid_data = product_schema.validate(data)
-        print(valid_data)
         if 'choice-radio' in data:
             add_new_product(valid_data)
         else:
@@ -134,7 +132,7 @@ def purchase(items, email):
         product = session.query(Product).filter_by(name=name).first()
         new_order = session.query(Orderproduct).filter_by(product_id=product.id, order_id=order.id).first()
         if product.amount < int(items[name]):
-            flash(f'Max amount of {name} is {items[name]}')
+            flash(f'Max amount of {name} is {product.amount}')
             return index_page()
         product.amount -= int(items[name])
         new_order.amount = items[name]
@@ -142,9 +140,17 @@ def purchase(items, email):
         new_order.price = product.price
         session.commit()
 
-# to do:
-#     - cookie expire date
-#     - cookie token unique
+
+@app.route('/orders')
+def orders():
+    cookie_token = request.cookies.get('cookie_token')
+    client = session.query(Account_data).filter_by(login_cookie=cookie_token).first()
+    if not client:
+        return redirect(url_for('login'))
+    orders_id = session.query(Order.id).filter_by(customer_id=client.id).all()
+    ids = [id[0] for id in orders_id]
+    my_orders = session.query(Orderproduct).filter(Orderproduct.order_id.in_(ids)).all()
+    return render_template('show_orders.html', data=my_orders)
 
 
 if __name__ == '__main__':

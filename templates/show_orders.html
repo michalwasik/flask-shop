@@ -1,0 +1,37 @@
+<html>
+<head>
+  <style>
+table, th, td {
+  border: 1px solid black;
+  border-collapse: collapse;
+}
+th, td {
+  padding: 5px;
+  text-align: left;
+}
+th.b {
+  font-family: Arial, Helvetica, sans-serif;
+}
+td.a {
+  font-family: "Times New Roman", Times, serif;
+}
+</style>
+</head>
+<body>
+<h1>Your orders:</h1><br>
+<table style="width:50%">
+  <tr>
+    <th class="b">Name</th>
+    <th class="b">Amount</th>
+    <th class="b">Price</th>
+  </tr>
+  {% for obj in data %}
+  <tr>
+    <td class="a">{{obj.name}}</td>
+    <td class="a">{{obj.amount}}</td>
+    <td class="a">{{obj.price}}</td>
+  </tr>
+  {% endfor %}
+</table>
+</body>
+</html>
