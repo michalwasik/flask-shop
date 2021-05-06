@@ -3,6 +3,16 @@
 </head>
 <body>
 <form target="_self" method="post">
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-danger alert-dismisable" role="alert">
+                    <li>{{ message }}</li>
+                </div>
+            {% endfor%}
+    {% endif %}
+    {% endwith %}
+    <br><br>
 {% for obj in data %}
 
     <label>{{obj.name}} price: {{obj.price}}  Quantity: {{obj.amount}}</label>
