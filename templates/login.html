@@ -1,15 +1,72 @@
+<!DOCTYPE html>
 <html>
 <head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+body {font-family: Arial, Helvetica, sans-serif;}
+form {border: 3px solid #f1f1f1;}
+
+input[type=text], input[type=password] {
+  width: 100%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+}
+
+button {
+  background-color: #04AA6D;
+  color: white;
+  padding: 14px 20px;
+  margin: 8px 0;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+}
+
+button:hover {
+  opacity: 0.8;
+}
+
+.container {
+  padding: 16px;
+  width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+
+}
+
+.cancelbtn {
+  width: auto;
+  padding: 10px 18px;
+  background-color: #f44336;
+  margin-left: 20px;
+
+}
+</style>
 </head>
 <body>
-<h1>Sign in:</h1>
-<br>
+
+<h2>Login Form</h2>
+
 <form target="_self" method="post">
-  <label for="login">Login:</label><br>
-  <input type="text" id="login" name="login"><br>
-  <label for="password">Password:</label><br>
-  <input type="text" id="password" name="password"><br><br>
-  <input type="submit" value="Log in">
+
+  <div class="container">
+    <label for="login"><b>Username</b></label>
+    <input type="text" placeholder="Enter Username" name="login" required>
+
+    <label for="password"><b>Password</b></label>
+    <input type="password" placeholder="Enter Password" name="password" required>
+
+    <button type="submit">Login</button>
+  </div>
+
+  <div class="container">
+  Don't have an account?
+    <a href="http://127.0.0.1:5000/create_account"><button type="button" class="cancelbtn">Sign Up</button></a>
+  </div>
 </form>
+
 </body>
 </html>

@@ -79,6 +79,7 @@ def index_page(cookie=None):
 def login():
     if request.method == 'POST':
         data = request.form.to_dict()
+        print(data)
         valid_login = login_schema.validate(data)
         client = session.query(Account_data).filter_by(login=valid_login['login']).first()
         if client:
@@ -103,6 +104,11 @@ def logout():
     res = make_response(redirect(url_for('login')))
     res.set_cookie('cookie_token', '', expires=0)
     return res
+
+
+@app.route('/terms')
+def terms():
+    return render_template('terms.html')
 
 
 def password_check(password, og_password):
