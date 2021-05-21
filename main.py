@@ -120,7 +120,9 @@ def items():
     if request.method == 'POST':
         cookie_token = request.cookies.get('cookie_token')
         client = session.query(Account_data).filter_by(login_cookie=cookie_token).first()
+        print(client)
         if not client:
+            print('spadam')
             return redirect(url_for('login'))
         data = request.form.to_dict()
         data = {k: v for k, v in data.items() if v}

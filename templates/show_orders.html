@@ -1,29 +1,35 @@
 <html>
 <head>
   <style>
-table, th, td {
-  border: 1px solid black;
+table {
   border-collapse: collapse;
+  width: 100%;
 }
+
 th, td {
-  padding: 5px;
+  padding: 8px;
   text-align: left;
+  font-size:20px;
+  border-bottom: 1px solid #ddd;
 }
-th.b {
-  font-family: Arial, Helvetica, sans-serif;
+th{
+font-size:25;
+color: blue;
 }
-td.a {
-  font-family: "Times New Roman", Times, serif;
+div{
+margin-top:50px;
+margin-left:650px;
 }
 </style>
 </head>
 <body>
-<h1>Your orders:</h1><br>
+<h1 style="text-align: center; margin-top:50px;">Your orders:</h1><br>
+<div>
 <table style="width:50%">
   <tr>
-    <th class="b">Name</th>
-    <th class="b">Amount</th>
-    <th class="b">Price</th>
+    <th>Name</th>
+    <th>Amount</th>
+    <th>Price</th>
   </tr>
   {% for obj in data %}
   <tr>
@@ -33,5 +39,6 @@ td.a {
   </tr>
   {% endfor %}
 </table>
+</div>
 </body>
 </html>

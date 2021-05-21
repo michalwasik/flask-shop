@@ -1,7 +1,76 @@
 <html>
 <head>
+    <style>
+    div.center {
+  margin: auto;
+  width: 60%;
+  border: 3px solid #73AD21;
+  padding: 10px;
+  text-align: center;
+
+}
+        table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+th, td {
+  padding: 14px;
+  text-align: left;
+  font-size: 20px;
+  border-bottom: 1px solid #ddd;
+}
+    div.tab{
+    margin-top:100px;
+    margin-left:auto;
+    margin-right:auto;
+    width:800px;
+    }
+
+button {
+  background-color: #04AA6D;
+  color: white;
+  padding: 20px 25px;
+  margin: 8px 0;
+  border: none;
+  cursor: pointer;
+  width: 150px;
+}
+div.but{
+margin-top:50px;
+margin-left:1200px;
+margin-right:auto;
+}
+.logoutbtn {
+  width: 80px;
+  padding: 10px 18px;
+  background-color: #4169E1;
+  margin-left: 20px;
+  color: #FFFFE0;
+  }
+
+ .loginbtn {
+  width: 80px;
+  padding: 10px 18px;
+  background-color: #4169E1;
+  margin-left: 20px;
+  color: #FFFFE0;
+  }
+  .orderbtn{
+    width: 80px;
+  padding: 10px 18px;
+  background-color: #4169E1;
+  margin-left: 20px;
+  color: #FFFFE0;
+  }
+    </style>
 </head>
 <body>
+     <a href="/logout"><button type="button" class="logoutbtn">Logout</button></a>
+     <a href="/login"><button type="button" class="loginbtn">Login</button></a>
+     <a href="/orders"><button type="button" class="orderbtn">Orders</button></a>
+
+
 <form target="_self" method="post">
     {% with messages = get_flashed_messages() %}
     {% if messages %}
@@ -12,18 +81,33 @@
             {% endfor %}
     {% endif %}
     {% endwith %}
-    <br><br>
+    <div class="center">
+        <h1>Welcome to our shop</h1>
+    </div>
+    <div class="center" style="border:None">
+        <h2>Place your order below</h2>
+    </div>
+    <div class="tab">
+    <table>
+        <tr>
+            <th>Name</th>
+            <th>Price</th>
+            <th>Available</th>
+            <th>Order amount</th>
+        </tr>
 {% for obj in data %}
-
-    <label>{{obj.name}} price: {{obj.price}}  Quantity: {{obj.amount}}</label>
-    <input type="number" id={{obj.name}} name={{obj.name}}><br>
+    <tr>
+        <td>{{obj.name}}</td>
+        <td>{{obj.price}}</td>
+        <td>{{obj.amount}}</td>
+        <td><input type="number" placeholder="0" id={{obj.name}} name={{obj.name}}></td>
+    </tr>
 {% endfor %}
-    <input type="submit" value="Buy">
-     <nav>
-          <ul class="nav nav-pills pull-right">
-            <li role="presentation" class="active"><a href="/logout">Logout</a></li>
-          </ul>
-     </nav>
+    </table>
+    </div>
+    <div class="but">
+    <button type="submit">Buy</button>
+    </div>
 </form>
 </body>
 </html>
