@@ -9,6 +9,7 @@ Base = declarative_base()
 
 class Account_data(Base):
     __tablename__= 'account_data'
+
     id = Column(Integer, primary_key=True)
     login = Column(String, nullable=False, unique=True)
     hashed_password = Column(Integer, nullable=False, unique=True)
@@ -58,7 +59,7 @@ class Product(Base):
 
     id = Column(Integer, primary_key=True)
     name = Column(String, nullable=False, unique=True)
-    price = Column(Integer, nullable=False)
+    price = Column(Float, nullable=False)
     amount = Column(Integer)
 
 

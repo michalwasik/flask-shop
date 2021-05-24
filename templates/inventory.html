@@ -1,29 +1,98 @@
 <html>
 <head>
+  <style>
+        table {
+  border-collapse: collapse;
+  width: 900px;
+  margin-bottom:30px;
+}
+
+th, td {
+  padding: 14px;
+  text-align: left;
+  font-size: 30px;
+  border-bottom: 1px solid #ddd;
+}
+div{
+width:1000px;
+margin-top: 100px;
+margin-left:auto;
+margin-right:auto;
+color:blue;
+}
+button {
+  background-color: #04AA6D;
+  color: white;
+  padding: 14px 20px;
+  margin: 8px 0;
+  border: none;
+  cursor: pointer;
+  width: 200px;
+  font-size:20px;
+}
+input.data{
+width:150px;
+height:40px;
+font-size:20px;
+}
+input.pro{
+width:400px;
+height:40px;
+font-size:20px;
+}
+input.b{font-size:20px;
+width:40px;
+height:20px;
+}
+.font{
+font-size:20px;
+}
+.disclaimer{
+font-size:20px;
+margin-left:50px;
+}
+.divbut{
+margin-left:600px;
+}
+.homebtn {
+  width: 100px;
+  padding: 10px 18px;
+  background-color: #4169E1;
+  margin-left: 20px;
+  color: #FFFFE0;
+  text-align:center;
+  }
+  </style>
 </head>
 <body>
-<h1>New delivery data:</h1>
-<br>
-
-
+<a href="/"><button type="button" class="homebtn">Home</button></a>
+<h1 style="text-align: center">New delivery data:</h1>
+<div>
 <form target="_self" method="post">
 
+<table>
+  <tr>
+    <th>Product</th>
+    <th>Quantity</th>
+    <th>Price**</th>
+  </tr>
+  <tr>
+    <td><input class="pro" type="text" id="product" name="product"></td>
+    <td><input class="data" type="number" id="quantity" name="quantity" min="1"></td>
+    <td><input class="data" type="number" step="0.01" id="price" name="price"></td>
+  </tr>
+</table>
+  <div class="divbut">
+    <button type="submit">Add to inventory</button>
+  </div>
+    <h2 style="margin-bottom:20px">    *Optional*</h2>
+
+  <input class="b" type="radio" name="choice-radio">
+  <a class="font"> Product doesn't exist in database</a><br><br>
+  <a class="disclaimer"> **Fill when add new product</a>
 
 
-  <label for="product">Product:</label><br>
-  <input type="text" id="product" name="product"><br>
-  <label for="quantity">Quantity:</label><br>
-  <input type="number" id="quantity" name="quantity" min="1"><br>
-  <label for="price">Price**:</label><br>
-  <input type="number" id="price" name="price"><br>
-    <h4>    *Optional*</h4>
-
-  <input type="radio" name="choice-radio">
-    Product doesn't exist in database
-  <br><br>
-  <input type="submit" value="Add to inventory">
-  <br><br>
-  **Fill when add new product
 </form>
+</div>
 </body>
 </html>

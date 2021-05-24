@@ -18,10 +18,15 @@ app.secret_key = '75e958ab19d6a176852e31c0a7a2dd18'
 def delivery():
     if request.method == 'POST':
         data = request.form.to_dict()
-        data.setdefault('price', 0)
+        if data['price'] == '':
+            data['price'] = 0
+        if data['quantity'] == '':
+            data['quantity'] = 0
         valid_data = product_schema.validate(data)
         if 'choice-radio' in data:
             add_new_product(valid_data)
+        if valid_data['quantity'] == 0:
+            update_product_price(valid_data)
         else:
             update_product_quantity(valid_data)
     return render_template('inventory.html')
@@ -30,6 +35,12 @@ def delivery():
 def add_new_product(data):
     new_product = Product(name=data['product'], amount=data['quantity'], price=data['price'])
     session.add(new_product)
+    session.commit()
+
+
+def update_product_price(data):
+    old_product = session.query(Product).filter_by(name=data['product']).first()
+    old_product.price = data['price']
     session.commit()
 
 
@@ -79,7 +90,6 @@ def index_page(cookie=None):
 def login():
     if request.method == 'POST':
         data = request.form.to_dict()
-        print(data)
         valid_login = login_schema.validate(data)
         client = session.query(Account_data).filter_by(login=valid_login['login']).first()
         if client:
@@ -120,9 +130,7 @@ def items():
     if request.method == 'POST':
         cookie_token = request.cookies.get('cookie_token')
         client = session.query(Account_data).filter_by(login_cookie=cookie_token).first()
-        print(client)
-        if not client:
-            print('spadam')
+        if not cookie_token:
             return redirect(url_for('login'))
         data = request.form.to_dict()
         data = {k: v for k, v in data.items() if v}
@@ -153,7 +161,7 @@ def purchase(items, email):
 def orders():
     cookie_token = request.cookies.get('cookie_token')
     client = session.query(Account_data).filter_by(login_cookie=cookie_token).first()
-    if not client:
+    if not cookie_token:
         return redirect(url_for('login'))
     orders_id = session.query(Order.id).filter_by(customer_id=client.id).all()
     ids = [id[0] for id in orders_id]
