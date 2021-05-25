@@ -14,7 +14,6 @@ class Account_data(Base):
     login = Column(String, nullable=False, unique=True)
     hashed_password = Column(Integer, nullable=False, unique=True)
     login_cookie = Column(String, nullable=True, unique=True)
-    cookie_expired = Column(DateTime, nullable=True)
     customer_email = Column(String, ForeignKey('customer.email'))
 
 
@@ -58,9 +57,10 @@ class Product(Base):
     __tablename__ = 'product'
 
     id = Column(Integer, primary_key=True)
-    name = Column(String, nullable=False, unique=True)
+    name = Column(String(20), nullable=False, unique=True)
     price = Column(Float, nullable=False)
     amount = Column(Integer)
+    shu = Column(Integer)
 
 
 Base.metadata.create_all(engine)  # create db

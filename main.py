@@ -4,7 +4,6 @@ from sqlalchemy.orm import sessionmaker
 import hashlib
 from my_schema import product_schema, customer_schema, login_schema
 from secrets import token_hex
-# from datetime import datetime
 
 
 Session = sessionmaker(bind=engine)
@@ -33,7 +32,7 @@ def delivery():
 
 
 def add_new_product(data):
-    new_product = Product(name=data['product'], amount=data['quantity'], price=data['price'])
+    new_product = Product(name=data['product'], amount=data['quantity'], price=data['price'], shu=data['shu'])
     session.add(new_product)
     session.commit()
 

@@ -21,10 +21,10 @@ th, td {
   border-bottom: 1px solid #ddd;
 }
     div.tab{
-    margin-top:100px;
+    margin-top:70px;
     margin-left:auto;
     margin-right:auto;
-    width:800px;
+    width:900px;
     }
 
 button {
@@ -92,6 +92,7 @@ margin-right:auto;
         <tr>
             <th>Name</th>
             <th>Price in $</th>
+            <th>SHU</th>
             <th>Available</th>
             <th>Order amount</th>
         </tr>
@@ -99,8 +100,9 @@ margin-right:auto;
     <tr>
         <td>{{obj.name}}</td>
         <td>{{obj.price}}</td>
+        <td>{{obj.shu}}</td>
         <td>{{obj.amount}}</td>
-        <td><input type="number" placeholder="0" id={{obj.name}} name={{obj.name}}></td>
+        <td><input type="number" placeholder="0" id={{obj.name}} name="{{obj.name}}"></td>
     </tr>
 {% endfor %}
     </table>
